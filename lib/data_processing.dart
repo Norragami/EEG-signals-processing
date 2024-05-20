@@ -1,8 +1,11 @@
+
+
 import 'models.dart';
 
 
 //Read file as string and parse data to 3 channels
-List<List<int>> parseData(String fileContent) {
+List<List<double>> parseData(String fileContent) {
+  
   final List<String> data = fileContent.split('\n');
 
   for (int i = 0; i < data.length; i++) {
@@ -13,20 +16,20 @@ List<List<int>> parseData(String fileContent) {
         switch (k) {
           case 0:
             {
-              channel1.add(int.parse(dataSample[i]));
+              channel1.add(double.parse(dataSample[i]));
               k++;
             }
 
             break;
           case 1:
             {
-              channel2.add(int.parse(dataSample[i]));
+              channel2.add(double.parse(dataSample[i]));
               k++;
             }
             break;
           case 2:
             {
-              channel3.add(int.parse(dataSample[i]));
+              channel3.add(double.parse(dataSample[i]));
               k++;
             }
             break;
@@ -35,5 +38,8 @@ List<List<int>> parseData(String fileContent) {
     }
   }
 
+  channel1Temp = channel1;
+  channel2Temp = channel2;
+  channel3Temp = channel3;
   return [channel1, channel2, channel3];
 }

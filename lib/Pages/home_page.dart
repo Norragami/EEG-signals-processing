@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:eeg_processing/charts.dart';
 import 'package:eeg_processing/data_processing.dart';
+import 'package:eeg_processing/filters.dart';
 import 'package:eeg_processing/models.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,84 +27,235 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          Center(
+          
+          Expanded(
+            flex: 0,
+            child: Center(
+              
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () async {
+                          // final Directory tempDir =
+                          //     await getApplicationDocumentsDirectory();
+                          FilePickerResult? result =
+                              await FilePicker.platform.pickFiles();
+                    
+                          if (result != null) {
+                            File file = File(result.files.single.path!);
+                            final String fileContent = await file.readAsString();
+                            setState(() {
+                              parseData(fileContent);
+                              dropDownIndex = 1;
+                            });
+                          }
+                          // final File file = File('${tempDir.path}\\EEG_3c_04.txt');
+                    
+                          // final String fileContent = await file.readAsString();
+                    
+                          // setState(() {parseData(fileContent);});
+                        },
+                        child: const Text("Выбрать файл",style: TextStyle(color: Colors.black),)),
+                    ElevatedButton(
+                        onPressed: () {
+                          
+                        }
+                        ,
+                        child: const Text("Статистика",style: TextStyle(color: Colors.black, ))),
+                        DropdownButton(
+                          value: dropDownIndex,
+                          menuMaxHeight: 300.0,
+                          borderRadius: BorderRadius.circular(10),
+                          style: const TextStyle(color: Colors.black,fontWeight: FontWeight.w500),
+                          
+                          items: const [
+                          DropdownMenuItem(
+                            value: 1,
+                            child: Text("Исходные сигналы"),
+                          ),
+                          DropdownMenuItem(
+                            value: 2,
+                            child: Text("ФНЧ"),
+                          ),
+                          DropdownMenuItem(
+                            value: 3,
+                            child: Text("Фильтр сетевой наводки"),
+                          ),
+                          DropdownMenuItem(
+                            value: 4,
+                            child: Text("ФНЧ+Фильтр сетевой наводки"),
+                          ),
+                          DropdownMenuItem(
+                            value: 5,
+                            child: Text("\u03B2-ритм"),
+                          )
+                          
             
-              child: ElevatedButton(
-                  onPressed: () async {
-                    // final Directory tempDir =
-                    //     await getApplicationDocumentsDirectory();
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles();
+                        ], onChanged: (e) {
+                          switch (e) {
+                            case 1:
+                              setState(() {
+                                dropDownIndex = 1;
+                                channel1Temp = channel1;
+                                channel2Temp = channel2;
+                                channel3Temp = channel3;
+                              });
+                              break;
+                            case 2:
+                            {
+                                
+                          setState(() {
+                                dropDownIndex = 2;
+                                channel1Temp = LowPassFilter.filter(channel1);
+                                channel2Temp = LowPassFilter.filter(channel2);
+                                channel3Temp = LowPassFilter.filter(channel3);
+                          });
+                            }
+                              break;
+                            case 3:{
+                                channel1Temp = Filter50Hz.filter(channel1);
+                                channel2Temp = Filter50Hz.filter(channel2);
+                                channel3Temp = Filter50Hz.filter(channel3);
+                            // print(channel1Temp);
+                            // print(channel2Temp);
+                            // print(channel3Temp);
+                              setState(() {
+                                dropDownIndex=3;
+                                // channel1Temp = channel1Temp.sublist(175,channel1Temp.length);
+                                // channel2Temp = channel2Temp.sublist(175,channel2Temp.length);
+                                // channel3Temp = channel3Temp.sublist(175,channel3Temp.length);
+                                 
+                                
+                              });
+                          
+                              break;
+                            }
+                            case 4:{
+                              setState(() {
+                                dropDownIndex=4;
+                                channel1Temp = Filter50Hz.filter(LowPassFilter.filter(channel1));
+                                channel2Temp = Filter50Hz.filter(LowPassFilter.filter(channel2));
+                                channel3Temp = Filter50Hz.filter(LowPassFilter.filter(channel3));
+                                });
+                            }
+                            break;
+                            case 5:{
+                              setState(() {
+                                dropDownIndex=5;
+                                channel1Temp = BandPassFilter.filter(Filter50Hz.filter(LowPassFilter.filter(channel1)));
+                                channel2Temp = BandPassFilter.filter(Filter50Hz.filter(LowPassFilter.filter(channel2)));
+                                channel3Temp = BandPassFilter.filter(Filter50Hz.filter(LowPassFilter.filter(channel3)));
+                              });
+                            }
+                            break;
+                          }
+                          
+                        })
+                    
+                        
+                  ],
+                ),
               
-                    if (result != null) {
-                      File file = File(result.files.single.path!);
-                      final String fileContent = await file.readAsString();
-                      setState(() {
-                        parseData(fileContent);
-                      });
-                    }
-                    // final File file = File('${tempDir.path}\\EEG_3c_04.txt');
-              
-                    // final String fileContent = await file.readAsString();
-              
-                    // setState(() {parseData(fileContent);});
-                  },
-                  child: const Text("Начать")),
-            
+            ),
           ),
-          GestureDetector(
-            onPanUpdate: (details) {
-              if (details.delta.dx > 0) {
+          
+              // 1 КАНАЛ
+              Expanded(
+                child: GestureDetector(
+                            onPanUpdate: (details) {
+                if (details.delta.dx > 0) {
+                  setState(() {
+                    customMinX1 += 0.01;
+                    customMaxX1 += 0.01;
+                  });
+                } else if (details.delta.dx < 0) {
+                  setState(() {
+                    customMinX1 -= 0.01;
+                    customMaxX1 -= 0.01;
+                  });
+                }
+                            },
+                            onDoubleTap: () {
                 setState(() {
-                  customMinX += 0.01;
-                  customMaxX += 0.01;
+                  customMinX1 = 0;
+                  customMaxX1 = channel1Temp.length/250;
                 });
-              } else if (details.delta.dx < 0) {
+                            },
+                            child:SizedBox(height: 200,
+                  child: channel1Temp.isNotEmpty
+                      ? lineChart(channel1Temp, customMinX1, customMaxX1)
+                      : const Padding(
+                        padding: EdgeInsets.only(top: 50),
+                        child: SizedBox(
+                            child: Text('Нет данных по 1-му каналу, выберите файл',style: TextStyle(fontSize: 18,color: Colors.blue, fontWeight: FontWeight.bold),)
+                          ),
+                      ),
+                ),),
+              ),
+              // 2 КАНАЛ
+              Expanded(
+                child: GestureDetector(
+                            onPanUpdate: (details) {
+                if (details.delta.dx > 0) {
+                  setState(() {
+                    customMinX2 += 0.01;
+                    customMaxX2 += 0.01;
+                  });
+                } else if (details.delta.dx < 0) {
+                  setState(() {
+                    customMinX2 -= 0.01;
+                    customMaxX2 -= 0.01;
+                  });
+                }
+                            },
+                            onDoubleTap: () {
                 setState(() {
-                  customMinX -= 0.01;
-                  customMaxX -= 0.01;
+                  customMinX2 = 0;
+                  customMaxX2 = channel2Temp.length/250;
                 });
-              }
-            },
-            onDoubleTap: () {
-              setState(() {
-                customMinX = 0;
-                customMaxX = 4;
-              });
-            },
-            child: Column(children: [
-              SizedBox(height: 200,
-                child: channel1.isNotEmpty
-                    ? lineChart(channel1, customMinX, customMaxX)
-                    : SizedBox(
-                        child: Container(
-                          color: Colors.red,
+                            },
+                            child:SizedBox(height: 200,
+                  child: channel2Temp.isNotEmpty
+                      ? lineChart(channel2Temp,customMinX2, customMaxX2)
+                      : const SizedBox(
+                          child: Text('Нет данных по 2-му каналу, выберите файл',style: TextStyle(fontSize: 18,color: Colors.blue, fontWeight: FontWeight.bold),)
                         ),
-                      ),
+                )),
               ),
-              SizedBox(height: 200,
-                child: channel2.isNotEmpty
-                    ? lineChart(channel2,customMinX, customMaxX)
-                    : SizedBox(
-                        child: Container(
-                          color: Colors.blue,
+              // 3 КАНАЛ
+              Expanded(
+                child: GestureDetector(
+                onPanUpdate: (details) {
+                if (details.delta.dx > 0) {
+                  setState(() {
+                    customMinX3 += 0.01;
+                    customMaxX3 += 0.01;
+                  });
+                } else if (details.delta.dx < 0) {
+                  setState(() {
+                    customMinX3 -= 0.01;
+                    customMaxX3 -= 0.01;
+                  });
+                }
+                },
+                onDoubleTap: () {
+                setState(() {
+                  customMinX3 = 0;
+                  customMaxX3 = channel3Temp.length/250;
+                });
+                },
+                child:SizedBox(height: 200,
+                  child: channel3Temp.isNotEmpty
+                      ? lineChart(channel3Temp,customMinX3, customMaxX3)
+                      : const SizedBox(
+                          child: Text('Нет данных по 3-му каналу, выберите файл',style: TextStyle(fontSize: 18,color: Colors.blue, fontWeight: FontWeight.bold),)
                         ),
-                      ),
+                ),
+                            ),
               ),
-              SizedBox(height: 200,
-                child: channel3.isNotEmpty
-                    ? lineChart(channel3,customMinX, customMaxX)
-                    : SizedBox(
-                        child: Container(
-                          color: Colors.green,
-                        ),
-                      ),
-              ),
-            ]),
-          ),
-          //    Expanded( child:  channel1.isNotEmpty ? lineChart(channel1,customMinX,customMaxX): SizedBox(child: Container(color: Colors.red,),),)),
-          // // Expanded(child: channel2.isNotEmpty? lineChart(channel2): SizedBox(child: Container(color: Colors.blue,),),),
-          // // Expanded(child: channel3.isNotEmpty? lineChart(channel3): SizedBox(child: Container(color: Colors.green,),),),
+          
+
         ],
       ),
     );
