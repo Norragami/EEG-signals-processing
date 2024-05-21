@@ -63,6 +63,9 @@ class _HomePageState extends State<HomePage> {
                       )),
                   ElevatedButton(
                     onPressed: () {
+                      if(channel1Temp.isNotEmpty&&channel2Temp.isNotEmpty&&channel3Temp.isNotEmpty){
+                        
+                      
                       showDialog(
                           context: context,
                           builder: (context) {
@@ -95,6 +98,11 @@ class _HomePageState extends State<HomePage> {
                               ], rows: setRows(channel1, channel2, channel3)),
                             );
                           });
+                      }else{
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("Выберите файл"),
+                        ));
+                      }
                     },
                     child: const Text(
                       "Статистика",
