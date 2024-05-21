@@ -1,4 +1,3 @@
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -8,32 +7,30 @@ Widget lineChart(List<double> channel, double customMinX, double customMaxX) {
     child: LineChart(
       LineChartData(
         lineTouchData: LineTouchData(
-          touchTooltipData: LineTouchTooltipData(
-            getTooltipColor: (touchedSpot) => Colors.blue.shade400,
-            getTooltipItems: (touchedSpots) {
-              return touchedSpots
-                  .map((spot) => LineTooltipItem(
-                      '${spot.y.toStringAsFixed(2)} мкВ \n ${spot.x.toStringAsFixed(2)} с', const TextStyle()))
-                  .toList();
+            touchTooltipData: LineTouchTooltipData(
+          getTooltipColor: (touchedSpot) => Colors.blue.shade400,
+          getTooltipItems: (touchedSpots) {
+            return touchedSpots
+                .map((spot) => LineTooltipItem(
+                    '${spot.y.toStringAsFixed(2)} мкВ \n ${spot.x.toStringAsFixed(2)} с',
+                    const TextStyle()))
+                .toList();
+          },
+        )),
 
-            },
-              
-            )
-          )
-        ,
-        
         clipData: const FlClipData.all(),
-        // minX: customMinX<0? 0:customMinX,
-        // maxX: customMaxX>channel.length/250? channel.length/250:customMaxX,
+
         minX: customMinX,
         maxX: customMaxX,
         // minY: -100 - channel.reduce(min).toDouble()>-50? -100:-50,
         // maxY: 100 - channel.reduce(max).toDouble()<50? 100:50,
+
         lineBarsData: [
           LineChartBarData(
             spots: [
               for (int i = 0; i < channel.length; i++)
-                FlSpot(i.toDouble() / 250, channel[i])],
+                FlSpot(i.toDouble() / 250, channel[i])
+            ],
             dotData: const FlDotData(show: false),
           )
         ],
@@ -47,9 +44,8 @@ Widget lineChart(List<double> channel, double customMinX, double customMaxX) {
                 ),
                 axisNameSize: 30,
                 sideTitles: SideTitles(
-                  
                   showTitles: true,
-                  reservedSize: 40,
+                  reservedSize: 50,
                 )),
             bottomTitles: AxisTitles(
                 axisNameWidget: Text(

@@ -108,6 +108,7 @@ class Filter50Hz {
 // static double a8= 7.742513834680843309854481049114838242531;
 // static double a9= -2.669772174476418236110930592985823750496;
 // static double a10= 0.849859965528344862839560391876148059964;
+
 static double bo =   0.965080986344733937620787855848902836442;
 static double b1 = -1.193282554333347178499025176279246807098;
 static double b2 =    2.299023051351233526418127439683303236961;
@@ -118,6 +119,8 @@ static double a1 = -1.214493479318976998371226727613247931004;
 static double a2 =   2.297803341913798202966745520825497806072;
 static double a3 = -1.172071629347716026359194074757397174835;
 static double a4 =   0.931381682126902532559142855461686849594;
+
+
 
 
 
@@ -137,6 +140,9 @@ List<double> result = List.filled(channel.length, 0);
    result[i]=(bo*channel[i] + b1*channel[i-1] + b2*channel[i-2]
         + b3*channel[i-3] + b4*channel[i-4] - a1*result[i-1]
         - a2*result[i-2] - a3*result[i-3] - a4*result[i-4]);
+
+
+
   
   }
   return  result;
@@ -208,4 +214,16 @@ class BandPassFilter {
     return result;
   }
   
+}
+
+class Detrend{
+
+
+  static List<double> detrend(List<double> channel) {
+    List<double> result = List.filled(channel.length, 0);
+    for (int i = 1; i < channel.length; i++) {
+      result[i]=channel[i]-channel[i-1];
+    }
+    return result;
+  }
 }
