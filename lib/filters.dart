@@ -219,11 +219,24 @@ class BandPassFilter {
 class Detrend{
 
 
+  // static List<double> detrend(List<double> channel) {
+  //   List<double> result = List.filled(channel.length, 0);
+  //   for (int i = 1; i < channel.length; i++) {
+  //     result[i]=channel[i]-channel[i-1];
+  //   }
+
   static List<double> detrend(List<double> channel) {
     List<double> result = List.filled(channel.length, 0);
-    for (int i = 1; i < channel.length; i++) {
-      result[i]=channel[i]-channel[i-1];
+    for (int i = 0; i < channel.length; i++) {
+      var start = 0;
+      var end = 0;
+      if (i-3<0){start=0;}else{start=i-3;}
+      if(i+3>channel.length){end=channel.length;}else{end=i+3;}
+      var mean = channel.sublist(start, end).reduce((a, b) => a + b) / (end-start);
+      
+      result[i]=mean;
     }
+
     return result;
   }
 }

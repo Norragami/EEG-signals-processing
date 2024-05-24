@@ -51,6 +51,7 @@ List<List<double>> parseData(String fileContent) {
 
 List<double> calculateStat(List<double> channel) {
   var mean = channel.reduce((a, b) => a + b) / channel.length;
+  
   List<double> dev = List<double>.filled(channel.length, 0);
   for (int i = 0; i < channel.length; i++) {
     dev[i] = (channel[i] - mean);
