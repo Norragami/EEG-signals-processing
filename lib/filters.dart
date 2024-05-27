@@ -225,18 +225,40 @@ class Detrend{
   //     result[i]=channel[i]-channel[i-1];
   //   }
 
-  static List<double> detrend(List<double> channel) {
-    List<double> result = List.filled(channel.length, 0);
-    for (int i = 0; i < channel.length; i++) {
-      var start = 0;
-      var end = 0;
-      if (i-3<0){start=0;}else{start=i-3;}
-      if(i+3>channel.length){end=channel.length;}else{end=i+3;}
-      var mean = channel.sublist(start, end).reduce((a, b) => a + b) / (end-start);
+  // static List<double> detrend(List<double> channel) {
+  //   List<double> result = List.filled(channel.length, 0);
+  //   for (int i = 0; i < channel.length; i++) {
+  //     var start = 0;
+  //     var end = 0;
+  //     if (i-3<0){start=0;}else{start=i-3;}
+  //     if(i+3>channel.length){end=channel.length;}else{end=i+3;}
+  //     var mean = channel.sublist(start, end).reduce((a, b) => a + b) / (end-start);
       
-      result[i]=mean;
+  //     result[i]=mean;
+  //   }
+
+  //   return result;
+  // }
+  static List<double> detrend(List<double> channel){
+    List<double> result = List.filled(channel.length, 0);
+    List<double> x = List.generate(channel.length, (i) => i.toDouble());
+    var meanX = x.reduce((a, b) => a + b) / x.length;
+    var meanY = channel.reduce((a, b) => a + b) / channel.length;
+    double numemator = 0;
+    double denominator = 0;
+    for(int i = 0; i < channel.length; i++){
+      numemator += (x[i]-meanX)*(channel[i]-meanY);
+      denominator += (x[i]-meanX)*(x[i]-meanX);
+    }
+    var b1 = numemator/denominator;
+    var b0 = meanY - b1*meanX;
+    for(int i = 0; i < channel.length; i++){
+      result[i] = channel[i] - b0 - b1*x[i];
     }
 
-    return result;
+
+
+
+    return result ;
   }
 }

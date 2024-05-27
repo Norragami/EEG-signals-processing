@@ -17,7 +17,7 @@ List<DataRow> setRows(channel1, channel2, channel3) {
       calculateStat(BandPassFilter.filter(LowPassFilter.filter(channel2)));
   var betaCh3Stats =
       calculateStat(BandPassFilter.filter(LowPassFilter.filter(channel3)));
-
+      
   return [
     DataRow(cells: [
       const DataCell(Text('MD')),
