@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:eeg_processing/filters.dart';
+import 'package:eeg_processing/other/filters.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'models.dart';

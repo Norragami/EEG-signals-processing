@@ -1,7 +1,7 @@
-import 'package:eeg_processing/filters.dart';
+import 'package:eeg_processing/other/filters.dart';
 import 'package:flutter/material.dart';
 
-import '../data_processing.dart';
+import '../other/data_processing.dart';
 
 List<DataRow> setRows(channel1, channel2, channel3) {
   var originCh1Stats = calculateStat(

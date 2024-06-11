@@ -1,9 +1,6 @@
 import 'dart:io';
 import 'package:eeg_processing/Pages/statistics.dart';
-import 'package:eeg_processing/charts.dart';
-import 'package:eeg_processing/data_processing.dart';
-import 'package:eeg_processing/filters.dart';
-import 'package:eeg_processing/models.dart';
+import 'package:eeg_processing/other/other.dart';
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
